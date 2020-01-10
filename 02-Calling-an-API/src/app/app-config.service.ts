@@ -1,16 +1,23 @@
 import { Injectable }  from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpBackend } from '@angular/common/http';
 
 @Injectable()
 export class AppConfigService {
     static settings: IAppConfig;
+    httpClient: HttpClient;
+    handler: HttpBackend;
 
-    constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient, handler: HttpBackend) {
+        this.httpClient = http;
+        this.handler = handler;
+    }
+
     load() {
 
-        const jsonFile = `assets/config/config.json`;
+        const jsonFile = `assets/appConfig.json`;
         return new Promise<void>((resolve, reject) => {
-            this.http.get(jsonFile).toPromise().then((response : IAppConfig) => {
+            this.httpClient = new HttpClient(this.handler);
+            this.httpClient.get(jsonFile).toPromise().then((response : IAppConfig) => {
                AppConfigService.settings = <IAppConfig>response;
 
                console.log('Config Loaded');
@@ -26,12 +33,8 @@ export class AppConfigService {
 
 export interface IAppConfig {
 
-    env: {
-        name: string
-    }
+    clientId: string
+    domain: string
+    audience: string
 
-    apiServer: {
-        link1:string,
-        link2:string,
-    }
 }

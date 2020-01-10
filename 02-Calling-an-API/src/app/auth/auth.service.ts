@@ -16,10 +16,10 @@ export class AuthService {
   // Create an observable of Auth0 instance of client
   auth0Client$ = (from(
     createAuth0Client({
-      domain: config.domain,
-      client_id: config.clientId,
+      domain: AppConfigService.settings.domain,
+      client_id: AppConfigService.settings.clientId,
       redirect_uri: `${window.location.origin}`,
-      audience: config.audience
+      audience: AppConfigService.settings.audience
     })
   ) as Observable<Auth0Client>).pipe(
     shareReplay(1), // Every subscription receives the same shared value
@@ -44,7 +44,7 @@ export class AuthService {
 
   constructor(private router: Router) {
 
-    console.log(AppConfigService.settings.apiServer);
+    console.log(AppConfigService.settings.clientId);
     
 
     // On initial load, check authentication state with authorization server

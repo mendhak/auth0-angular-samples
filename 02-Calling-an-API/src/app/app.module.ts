@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { HighlightModule } from 'ngx-highlightjs';
 import json from 'highlight.js/lib/languages/json';
@@ -15,11 +15,19 @@ import { HeroComponent } from './components/hero/hero.component';
 import { HomeContentComponent } from './components/home-content/home-content.component';
 import { LoadingComponent } from './components/loading/loading.component';
 import { ExternalApiComponent } from './pages/external-api/external-api.component';
+import { AppConfigService } from './app-config.service';
 import { HttpClientModule } from '@angular/common/http';
 
 export function hljsLanguages() {
   return [{ name: 'json', func: json }];
 }
+
+export function initializeApp(appConfigService: AppConfigService) {
+  return (): Promise<any> => { 
+    return appConfigService.load();
+  }
+}
+
 
 @NgModule({
   declarations: [
@@ -43,7 +51,10 @@ export function hljsLanguages() {
     }),
     FontAwesomeModule
   ],
-  providers: [],
+  providers: [ 
+    AppConfigService,
+    { provide: APP_INITIALIZER,useFactory: initializeApp, deps: [AppConfigService], multi: true}
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
